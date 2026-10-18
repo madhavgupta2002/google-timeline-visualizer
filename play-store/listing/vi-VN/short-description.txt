@@ -1,1 +1,0 @@
-Ứng dụng gốc MahlerLab cho video Dòng thời gian Google Maps.

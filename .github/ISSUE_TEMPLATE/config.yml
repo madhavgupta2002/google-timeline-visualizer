@@ -1,8 +1,0 @@
-blank_issues_enabled: false
-contact_links:
-  - name: Lightweight feedback and comments
-    url: https://github.com/mahlernim/google-timeline-visualizer/discussions/categories/general
-    about: Share informal opinions, comments, and general feedback in Discussions.
-  - name: Ideas and suggestions
-    url: https://github.com/mahlernim/google-timeline-visualizer/discussions/categories/ideas
-    about: Discuss an early idea before turning it into a concrete feature request.

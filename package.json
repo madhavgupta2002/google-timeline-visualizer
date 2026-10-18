@@ -1,0 +1,25 @@
+{
+  "name": "timeline-explorer",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Interactive Google Maps Timeline explorer and travel video maker with an auto-zooming camera.",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "build:cities": "node scripts/build-cities.mjs"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "maplibre-gl": "^6.15.0",
+    "mediabunny": "^1.61.6"
+  },
+  "devDependencies": {
+    "typescript": "^7.0.2",
+    "vite": "^8.3.4",
+    "vitest": "^5.0.5"
+  }
+}

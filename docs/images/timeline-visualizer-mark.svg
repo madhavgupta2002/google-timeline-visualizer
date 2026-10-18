@@ -1,7 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 108 108" role="img" aria-labelledby="title desc">
-  <title id="title">Timeline Visualizer mark</title>
-  <desc id="desc">A magenta map pin above a dark plum curved travel route</desc>
-  <path fill="#E90064" d="M54 20a20 20 0 0 0-20 20c0 16 20 42 20 42s20-26 20-42a20 20 0 0 0-20-20Z"/>
-  <circle cx="54" cy="40" r="10" fill="#FFF8FA"/>
-  <path fill="#24191D" d="M25 83c8-7 15-8 22-3 8 5 15 5 23-1 6-4 11-3 16 2l-5 7c-3-3-6-3-9-1-11 8-21 8-30 2-4-3-8-1-12 2Z"/>
-</svg>

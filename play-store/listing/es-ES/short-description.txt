@@ -1,1 +1,0 @@
-La app original de MahlerLab para vídeos de Google Maps Timeline.

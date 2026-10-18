@@ -1,1 +1,0 @@
-MahlerLab 原創應用，將 Google Maps Timeline 製成旅行影片。

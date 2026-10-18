@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Timeline Explorer</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧭</text></svg>" />
+  </head>
+  <body>
+    <div id="app" class="empty">
+      <aside id="sidebar">
+        <header class="brand">
+          <span class="logo">🧭</span>
+          <div>
+            <h1>Timeline Explorer</h1>
+            <p id="file-info" class="muted">No file loaded</p>
+          </div>
+          <button id="open-file" class="ghost" title="Open another file">Open…</button>
+        </header>
+
+        <nav class="tabs" role="tablist">
+          <button role="tab" data-tab="overview" class="active">Overview</button>
+          <button role="tab" data-tab="trips">Trips <span id="trip-count" class="badge"></span></button>
+          <button role="tab" data-tab="video">Video</button>
+        </nav>
+
+        <section data-panel="overview" class="panel active">
+          <div class="field-row">
+            <label>From <input type="date" id="sel-start" /></label>
+            <label>To <input type="date" id="sel-end" /></label>
+          </div>
+          <div class="chips" id="quick-ranges">
+            <button data-range="7">7 days</button>
+            <button data-range="30">30 days</button>
+            <button data-range="365">1 year</button>
+            <button data-range="year">This year</button>
+            <button data-range="all">All</button>
+          </div>
+          <div class="stats" id="stats"></div>
+          <h3>Places <span class="muted small">by time spent</span></h3>
+          <ol id="places" class="places"></ol>
+          <h3>Display</h3>
+          <label class="check"><input type="checkbox" id="opt-future" checked /> Show the rest of the route faintly</label>
+          <label class="check"><input type="checkbox" id="opt-stays" checked /> Show places you stayed</label>
+          <label class="check"><input type="checkbox" id="opt-heatmap" /> Heatmap of the selection</label>
+          <label class="field">Units
+            <select id="opt-units"><option value="km">Kilometres</option><option value="mi">Miles</option></select>
+          </label>
+        </section>
+
+        <section data-panel="trips" class="panel">
+          <p class="muted small">Trips are detected automatically: days you slept more than 50 km from home or went more than 100 km away. Click one to explore it.</p>
+          <ul id="trips" class="trips"></ul>
+        </section>
+
+        <section data-panel="video" class="panel">
+          <p class="muted small">The map shows a live preview of the video frame. Press play to watch it; the camera zooms in while you are in a place and out when you travel.</p>
+          <label class="field">Title <input type="text" id="vid-title" placeholder="Automatic" /></label>
+          <div class="field-row">
+            <label class="field">Format
+              <select id="vid-format">
+                <option value="1920x1080">Landscape 1080p</option>
+                <option value="1080x1920">Portrait 1080p (Stories)</option>
+                <option value="1080x1080">Square 1080</option>
+                <option value="1280x720">Landscape 720p</option>
+                <option value="720x1280">Portrait 720p</option>
+              </select>
+            </label>
+            <label class="field">Frame rate
+              <select id="vid-fps"><option value="30">30 fps</option><option value="60">60 fps</option></select>
+            </label>
+          </div>
+          <label class="field">Journey length <output id="vid-duration-out"></output>
+            <input type="range" id="vid-duration" min="10" max="180" step="5" value="30" />
+          </label>
+          <label class="field">Camera
+            <select id="cam-window">
+              <option value="1.2">Close – zooms often</option>
+              <option value="2" selected>Balanced</option>
+              <option value="3.5">Calm – wider views</option>
+            </select>
+          </label>
+          <label class="field">Closest zoom in a city <output id="cam-maxzoom-out"></output>
+            <input type="range" id="cam-maxzoom" min="8" max="16" step="0.5" value="13" />
+          </label>
+          <label class="field">Pacing <output id="pace-out"></output>
+            <input type="range" id="pace" min="0" max="2" step="0.1" value="1" />
+          </label>
+          <div class="actions">
+            <button id="vid-preview" class="secondary">▶ Preview</button>
+            <button id="vid-render" class="primary">Create MP4</button>
+          </div>
+          <div id="vid-progress" hidden>
+            <progress id="vid-progress-bar" max="1" value="0"></progress>
+            <div class="progress-row"><span id="vid-progress-text" class="small"></span><button id="vid-cancel" class="ghost small">Cancel</button></div>
+            <p class="muted small">Keep this tab visible while rendering.</p>
+          </div>
+          <div id="vid-result" hidden>
+            <video id="vid-player" controls playsinline></video>
+            <a id="vid-download" class="primary button" download>Download MP4</a>
+          </div>
+          <p id="vid-error" class="error" hidden></p>
+        </section>
+      </aside>
+
+      <main id="stage">
+        <div id="map"></div>
+        <canvas id="overlay"></canvas>
+        <div id="map-tools">
+          <select id="opt-style" title="Map style"></select>
+          <button id="fit" class="tool" title="Show the whole selection">⤢</button>
+        </div>
+        <div id="now" class="now"></div>
+      </main>
+
+      <footer id="timeline">
+        <div class="controls">
+          <button id="play" class="play" title="Play / pause (Space)">▶</button>
+          <button id="restart" class="ghost" title="Back to start">⏮</button>
+          <select id="speed" title="Playback speed">
+            <option value="0.25">0.25×</option>
+            <option value="0.5">0.5×</option>
+            <option value="1" selected>1×</option>
+            <option value="2">2×</option>
+            <option value="4">4×</option>
+          </select>
+          <label class="check follow" title="Let the camera follow the journey. Moving the map turns it off.">
+            <input type="checkbox" id="follow" checked /> Auto camera
+          </label>
+          <span id="playhead-label" class="muted"></span>
+          <span class="hint muted small">Drag to select · click a trip · wheel to zoom · shift-drag to pan</span>
+        </div>
+        <div class="bar-wrap">
+          <canvas id="bar"></canvas>
+          <div id="bar-tooltip" class="tooltip" hidden></div>
+        </div>
+      </footer>
+
+      <div id="landing">
+        <div class="drop" id="drop">
+          <div class="logo big">🧭</div>
+          <h2>Explore your Google Maps Timeline</h2>
+          <p>Drop your <code>Timeline.json</code> here, or</p>
+          <button id="choose" class="primary">Choose file…</button>
+          <p class="muted small">Supports the on-device export (Android &amp; iPhone), plus older Takeout <code>Records.json</code> and Semantic Location History files – you can select several.</p>
+          <p class="muted small">Your file never leaves this browser. Map tiles are loaded from CARTO / OpenFreeMap, which see the map areas you view.</p>
+          <details class="muted small">
+            <summary>How do I export my Timeline?</summary>
+            <p><b>Android:</b> Settings → Location → Location services → Timeline → Export Timeline data.<br />
+            <b>iPhone:</b> Google Maps → profile → Settings → Personal content → Export Timeline data.</p>
+          </details>
+          <p id="load-status" class="status"></p>
+        </div>
+      </div>
+      <input type="file" id="file" accept=".json,application/json" multiple hidden />
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

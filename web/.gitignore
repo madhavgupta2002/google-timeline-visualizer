@@ -1,5 +1,0 @@
-.env*.local
-node_modules/
-dist/
-*.tsbuildinfo
-!/public/demo-mahlerlab.mp4
